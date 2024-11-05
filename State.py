@@ -72,3 +72,9 @@ class State():
         for i in self.green_apple:
             s += str(i)
         return s
+
+    def __hash__(self) -> int:
+        return hash(self.normalize())
+
+    def __eq__(self, value: object) -> bool:
+        return self.normalize() == value.normalize()

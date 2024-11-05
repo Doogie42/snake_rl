@@ -79,7 +79,6 @@ class Snake():
         if new_coord.y < 0 or new_coord.y >= self.board_height:
             return GameState.DEAD
         self.body.insert(0, new_coord)
-        self.body.pop()
         self.head = new_coord
         ret_state = GameState.ALIVE
         try:
@@ -89,10 +88,12 @@ class Snake():
                 if len(self.body) <= 1:
                     return GameState.DEAD
                 self.body.pop()
+                self.body.pop()
             if self.apple[apple_idx].type == AppleType.GREEN:
                 ret_state = GameState.GREEN
             self.apple[apple_idx] = self.make_apple(self.apple[apple_idx].type)
         except ValueError:
+            self.body.pop()
             pass
         return ret_state
 
