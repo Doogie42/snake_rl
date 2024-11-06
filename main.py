@@ -7,6 +7,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import random
 import numpy as np
+import Config
 
 
 def show_vision(state: State):
@@ -18,7 +19,8 @@ def main():
     random.seed(12)
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-t", type=int, help="train", nargs="?", const=1000, default=1000)
+        "-t", type=int, help="train", nargs="?",
+        const=Config.DEFAULT_LEN, default=Config.DEFAULT_LEN)
     parser.add_argument(
         "-g", help="graphic mode", action='store_true')
     parser.add_argument(
@@ -30,7 +32,7 @@ def main():
     parser.add_argument(
         "-size", type=int,
         help="size of square", nargs="?",
-        const=10, default=10)
+        const=Config.DEFAULT_SIZE, default=Config.DEFAULT_SIZE)
     parser.add_argument(
         "-prefill", help="prefill q_table with custom value",
         action="store_true")
@@ -49,7 +51,7 @@ def main():
         GameState.GREEN: 20,
         GameState.RED: -20
     }
-    agent = Agent(prefill=args.prefill)
+    agent = Agent(prefill=args.prefill, reward_val=reward_val)
     score_history = []
     duration_history = []
     green_apple_eaten = []
@@ -60,9 +62,11 @@ def main():
     if args.l:
         agent.load(args.l)
     if args.g:
-        graphic = Graphic(tick=21)
+        graphic = Graphic(tick=Config.DEFAULT_TICK)
     latest_apple_eaten = 0
-    for i in tqdm(range(args.t), disable=(args.g or args.show_vision)):
+    for i in tqdm(range(args.t), disable=(args.g or
+                                          args.show_vision or
+                                          args.step)):
         if not running:
             break
         snake = Snake(board_height=args.size, board_width=args.size)
@@ -94,7 +98,8 @@ def main():
             latest_apple_eaten += 1
             if game_state == GameState.RED or game_state == GameState.GREEN:
                 latest_apple_eaten = 0
-            if args.no_train and latest_apple_eaten > 200:
+            if args.no_train and latest_apple_eaten >\
+                    Config.DURATION_KILL_NO_FOOD_EATEN:
                 game_state = GameState.DEAD
                 latest_apple_eaten = 0
 
@@ -107,8 +112,11 @@ def main():
                     state_history.append(len(agent.q_table.keys()))
                 latest_apple_eaten = 0
                 break
-            if args.step and args.g:
-                graphic.wait_input()
+            if args.step:
+                if args.g:
+                    graphic.wait_input()
+                else:
+                    _ = input()
 
     if args.f:
         agent.save(args.f)

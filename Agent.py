@@ -1,15 +1,15 @@
 from State import State
-from Snake import SnakeDirection
+from Snake import SnakeDirection, GameState
 import pickle
 import random
 import math
 
 
 class Agent():
-    def __init__(self, prefill: bool = False) -> None:
+    def __init__(self, prefill: bool = False, reward_val: dict = None) -> None:
         self.q_table = {}
         if prefill:
-            self.q_table = prefill_q_table(self.q_table)
+            self.q_table = prefill_q_table(self.q_table, reward_val)
         self.direction = None
         self.learning_rate = 0.001
         self.gamma = 0.5
@@ -79,16 +79,16 @@ def permutation(s, i, d):
     d[''.join(s)] = [0, 0, 0, 0]
 
 
-def prefill_q_table(q_table: dict) -> dict:
+def prefill_q_table(q_table: dict, reward_val: dict) -> dict:
     s = ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]
     permutation(s, 0, q_table)
     for key, value in q_table.items():
         if key[0] == "1":
-            value[0] = -50
+            value[0] = reward_val[GameState.DEAD]
         if key[1] == "1":
-            value[1] = -50
+            value[1] = reward_val[GameState.DEAD]
         if key[2] == "1":
-            value[2] = -50
+            value[2] = reward_val[GameState.DEAD]
         if key[3] == "1":
-            value[3] = -50
+            value[3] = reward_val[GameState.DEAD]
     return q_table

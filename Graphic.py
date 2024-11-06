@@ -4,10 +4,11 @@ from Apple import AppleType
 from Snake import Snake
 from enum import Enum
 import time
+import Config
 
-SQUARE_SIZE = 30
 OFFSET_TOP_X = 100
 OFFSET_TOP_Y = 100
+SQUARE_SIZE = Config.SQUARE_SIZE
 
 
 class Action(Enum):
@@ -34,10 +35,6 @@ class Graphic():
         self.tick = tick
         pygame.font.init()
         self.my_font = pygame.font.Font(pygame.font.get_default_font(), 20)
-        self.snake_body_color = "blue"
-        self.snake_head_color = "green"
-        self.red_apple_color = "red"
-        self.green_apple_color = "green"
         self.action = Action.CONTINUE
         self.old_tick = -1
         self.higscore = 0
@@ -69,31 +66,33 @@ class Graphic():
 
     def top_statistics(self, game_number: int, score: int,
                        duration: int, known_state: int):
-        text_surface = self.my_font.render(f'fps {self.tick}', False, "green")
+        text_surface = self.my_font.render(f'fps {self.tick}', False,
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (0, 0))
         text_surface = self.my_font.render(f'# game {game_number}',
                                            False,
-                                           "green")
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (0, 20))
         text_surface = self.my_font.render(f'known state {known_state}',
                                            False,
-                                           "green")
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (0, 40))
 
-        text_surface = self.my_font.render(f'score {score}', False, "green")
+        text_surface = self.my_font.render(f'score {score}', False,
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (self.screen_width / 2, 0))
         text_surface = self.my_font.render(f'highscore {self.higscore}',
                                            False,
-                                           "green")
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (self.screen_width / 2, 20))
 
         text_surface = self.my_font.render(f'duration {duration}',
                                            False,
-                                           "green")
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (self.screen_width - 180, 0))
         text_surface = self.my_font.render(f'highduration {self.higduration}',
                                            False,
-                                           "green")
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (self.screen_width - 180, 20))
 
     def display_state(self,
@@ -101,10 +100,11 @@ class Graphic():
                       state: str,
                       snake: Snake) -> None:
         offset_bottom_y = OFFSET_TOP_Y + snake.board_height * SQUARE_SIZE
-        text_surface = self.my_font.render(f'State {state}', False, "green")
+        text_surface = self.my_font.render(f'State {state}', False,
+                                           Config.FONT_COLOR)
         self.screen.blit(text_surface, (0, offset_bottom_y + 10))
         text_surface = self.my_font.render(
-            f'value {[int(i) for i in state_value]}', False, "green"
+            f'value {[int(i) for i in state_value]}', False, Config.FONT_COLOR
         )
         self.screen.blit(text_surface, (0, offset_bottom_y + 30))
 
@@ -152,14 +152,14 @@ class Graphic():
 
     def draw_snake(self, snake: Snake) -> None:
         projected = self.board_to_screen_coord(snake.body[0])
-        pygame.draw.rect(self.screen, self.snake_head_color, pygame.Rect(
+        pygame.draw.rect(self.screen, Config.HEAD_COLOR, pygame.Rect(
                             projected.x,
                             projected.y,
                             SQUARE_SIZE,
                             SQUARE_SIZE))
         for piece in snake.body[1:]:
             projected = self.board_to_screen_coord(piece)
-            pygame.draw.rect(self.screen, self.snake_body_color, pygame.Rect(
+            pygame.draw.rect(self.screen, Config.BODY_COLOR, pygame.Rect(
                             projected.x,
                             projected.y,
                             SQUARE_SIZE,
@@ -169,9 +169,9 @@ class Graphic():
         for apple in snake.apple:
             projected = self.board_to_screen_coord(apple.coord)
             if apple.type == AppleType.RED:
-                color = self.red_apple_color
+                color = Config.RED_APPLE_COLOR
             else:
-                color = self.green_apple_color
+                color = Config.GREEN_APPLE_COLOR
             pygame.draw.rect(self.screen, color, pygame.Rect(
                             projected.x,
                             projected.y,
@@ -181,23 +181,23 @@ class Graphic():
     def draw_border(self, snake: Snake) -> None:
 
         pygame.draw.line(self.screen,
-                         "green",
+                         Config.LINE_COLOR,
                          (OFFSET_TOP_X, OFFSET_TOP_Y),
                          (OFFSET_TOP_X,
                           OFFSET_TOP_Y + snake.board_width * SQUARE_SIZE))
         pygame.draw.line(self.screen,
-                         "green",
+                         Config.LINE_COLOR,
                          (OFFSET_TOP_X, OFFSET_TOP_Y),
                          (OFFSET_TOP_X + snake.board_width * SQUARE_SIZE,
                           OFFSET_TOP_Y))
         pygame.draw.line(self.screen,
-                         "green",
+                         Config.LINE_COLOR,
                          (OFFSET_TOP_X + snake.board_width * SQUARE_SIZE,
                           OFFSET_TOP_Y),
                          (OFFSET_TOP_X + snake.board_width * SQUARE_SIZE,
                           OFFSET_TOP_Y + snake.board_height * SQUARE_SIZE))
         pygame.draw.line(self.screen,
-                         "green",
+                         Config.LINE_COLOR,
                          (OFFSET_TOP_X,
                           OFFSET_TOP_Y + snake.board_height * SQUARE_SIZE),
                          (OFFSET_TOP_X + snake.board_width * SQUARE_SIZE,
