@@ -1,5 +1,5 @@
 from Apple import Apple, AppleType
-from Coord import Coord, make_random_coord, make_randome_coord_include
+from Coord import Coord, make_random_coord
 import random
 from enum import Enum
 
@@ -44,9 +44,10 @@ class Snake():
         self.board_width = board_width
         self.board_height = board_height
         self.apple = []
-
+        self.duration = 0
+        self.apple_eaten = []
         for i in range(0, size_start - 1):
-            new_body = self.body[i] + self.direction_move[self.direction]
+            new_body = self.body[i] - self.direction_move[self.direction]
             self.body.append(new_body)
 
         for i in range(0, nb_green_apple):
@@ -55,37 +56,35 @@ class Snake():
             self.apple.append(self.make_apple(apple_type=AppleType.RED))
 
     def make_apple(self, apple_type: AppleType) -> Apple:
-        x_possible = list(range(0, self.board_width))
-        y_possible = list(range(0, self.board_height))
-        for body_piece in self.body:
-            x_possible = self._safe_del(x_possible, body_piece.x)
-            y_possible = self._safe_del(y_possible, body_piece.y)
-        for apple in self.apple:
-            x_possible = self._safe_del(x_possible, apple.coord.x)
-            y_possible = self._safe_del(y_possible, apple.coord.y)
-        apple_coord = make_randome_coord_include(x_possible, y_possible)
-        return Apple(apple_type, apple_coord)
-
-    def choose_direction(self) -> None:
-        self.direction = SnakeDirection((self.direction.value + 1) % 4)
+        coord = make_random_coord(0, self.board_height)
+        while coord in self.body or coord in self.apple:
+            coord = make_random_coord(0, self.board_height)
+        return Apple(apple_type, coord)
 
     def move(self, direction: SnakeDirection) -> GameState:
+        self.duration += 1
         self.direction = direction
         new_coord = self.head + self.direction_move[self.direction]
         if new_coord in self.body:
+            # print("Eaten alive")
             return GameState.DEAD
         if new_coord.x < 0 or new_coord.x >= self.board_width:
+            # print("WALL")
             return GameState.DEAD
         if new_coord.y < 0 or new_coord.y >= self.board_height:
+            # print("WALL")
             return GameState.DEAD
         self.body.insert(0, new_coord)
         self.head = new_coord
         ret_state = GameState.ALIVE
         try:
             apple_idx = self.apple.index(self.head)
+            self.apple_eaten.append(
+                Apple(self.apple[apple_idx].type, self.apple[apple_idx].coord)
+            )
             if self.apple[apple_idx].type == AppleType.RED:
                 ret_state = GameState.RED
-                if len(self.body) <= 1:
+                if len(self.body) <= 2:
                     return GameState.DEAD
                 self.body.pop()
                 self.body.pop()
@@ -103,3 +102,15 @@ class Snake():
         except ValueError:
             pass
         return my_list
+
+    def get_score(self) -> int:
+        return len(self.body)
+
+    def get_duration(self) -> int:
+        return self.duration
+
+    def get_green_apple_eaten(self) -> int:
+        return len([a for a in self.apple_eaten if a.type == AppleType.GREEN])
+
+    def get_red_apple_eaten(self) -> int:
+        return len([a for a in self.apple_eaten if a.type == AppleType.RED])

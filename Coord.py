@@ -18,14 +18,10 @@ class Coord():
     def __add__(self, rhs: object) -> object:
         return Coord(self.x + rhs.x, self.y + rhs.y)
 
+    def __sub__(self, rhs: object) -> object:
+        return Coord(self.x - rhs.x, self.y - rhs.y)
+
 
 def make_random_coord(start=0, max_val=10) -> Coord:
     return Coord(random.randrange(start, max_val),
                  random.randrange(start, max_val))
-
-
-def make_randome_coord_include(x_include: list[int] = [],
-                               y_include: list[int] = []) -> Coord:
-    x = random.choice(x_include)
-    y = random.choice(y_include)
-    return Coord(x, y)

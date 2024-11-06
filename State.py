@@ -18,50 +18,50 @@ class State():
         self.death = [0, 0, 0, 0]
         self.red_apple = [0, 0, 0, 0]
         self.green_apple = [0, 0, 0, 0]
-
         if snake.head.x == 0:
-            self.death[direction.Left] = 1
+            self.death[direction.Left.value] = 1
         if snake.head.x == snake.board_width - 1:
-            self.death[direction.Right] = 1
+            self.death[direction.Right.value] = 1
         if snake.head.y == 0:
-            self.death[direction.Top] = 1
+            self.death[direction.Top.value] = 1
         if snake.head.y == snake.board_height - 1:
-            self.death[direction.Down] = 1
+            self.death[direction.Down.value] = 1
+
         for body in snake.body:
             if body.y == snake.head.y:
                 if snake.head.x == body.x - 1:
-                    self.death[direction.Left.value] = 1
-                if snake.head.x == body.x + 1:
                     self.death[direction.Right.value] = 1
+                if snake.head.x == body.x + 1:
+                    self.death[direction.Left.value] = 1
             if body.x == snake.head.x:
                 if snake.head.y == body.y - 1:
-                    self.death[direction.Top.value] = 1
-                if snake.head.y == body.y + 1:
                     self.death[direction.Down.value] = 1
+                if snake.head.y == body.y + 1:
+                    self.death[direction.Top.value] = 1
 
         for apple in snake.apple:
             if apple.coord.y == snake.head.y:
                 if apple.coord.x > snake.head.x:
                     if apple.type == AppleType.GREEN:
-                        self.green_apple[direction.Right] = 1
+                        self.green_apple[direction.Right.value] = 1
                     else:
-                        self.red_apple[direction.Right] = 1
+                        self.red_apple[direction.Right.value] = 1
                 else:
                     if apple.type == AppleType.GREEN:
-                        self.green_apple[direction.Left] = 1
+                        self.green_apple[direction.Left.value] = 1
                     else:
-                        self.red_apple[direction.Left] = 1
+                        self.red_apple[direction.Left.value] = 1
             if apple.coord.x == snake.head.x:
                 if apple.coord.y > snake.head.y:
                     if apple.type == AppleType.GREEN:
-                        self.green_apple[direction.Down] = 1
+                        self.green_apple[direction.Down.value] = 1
                     else:
-                        self.red_apple[direction.Down] = 1
+                        self.red_apple[direction.Down.value] = 1
                 else:
                     if apple.type == AppleType.GREEN:
-                        self.green_apple[direction.Top] = 1
+                        self.green_apple[direction.Top.value] = 1
                     else:
-                        self.red_apple[direction.Top] = 1
+                        self.red_apple[direction.Top.value] = 1
 
     def normalize(self) -> str:
         s = ""
@@ -72,9 +72,3 @@ class State():
         for i in self.green_apple:
             s += str(i)
         return s
-
-    def __hash__(self) -> int:
-        return hash(self.normalize())
-
-    def __eq__(self, value: object) -> bool:
-        return self.normalize() == value.normalize()
