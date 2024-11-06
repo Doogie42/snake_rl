@@ -205,3 +205,9 @@ class Graphic():
 
     def get_user_action(self) -> Action:
         return self.action
+
+    def wait_input(self) -> None:
+        while True:
+            e = pygame.event.wait()
+            if e.type == pygame.KEYDOWN:
+                break

@@ -9,6 +9,11 @@ import random
 import numpy as np
 
 
+def show_vision(state: State):
+    print(f"state :{state}")
+    state.dump()
+
+
 def main():
     random.seed(12)
     parser = argparse.ArgumentParser()
@@ -28,6 +33,13 @@ def main():
         const=10, default=10)
     parser.add_argument(
         "-prefill", help="prefill q_table with custom value",
+        action="store_true")
+    parser.add_argument(
+        "-show-vision", help="show snake vision in terminal",
+        action="store_true")
+    parser.add_argument(
+        "-step",
+        help="wait for user input before moving, need graphical enabled",
         action="store_true")
     args = parser.parse_args()
 
@@ -50,19 +62,19 @@ def main():
     if args.g:
         graphic = Graphic(tick=21)
     latest_apple_eaten = 0
-    for i in tqdm(range(args.t), disable=args.g):
+    for i in tqdm(range(args.t), disable=(args.g or args.show_vision)):
         if not running:
             break
         snake = Snake(board_height=args.size, board_width=args.size)
         latest_apple_eaten = 0
 
         while True:
-            state = State(snake).normalize()
+            state = State(snake)
             direction = agent.choose_direction(state,
                                                allow_random=not args.no_train,
                                                current_iter=i)
             game_state = snake.move(direction)
-            new_state = State(snake).normalize()
+            new_state = State(snake)
             if not args.no_train:
                 agent.renforce(reward_val[game_state], state, new_state)
 
@@ -76,6 +88,8 @@ def main():
                     break
                 if action == Action.RESTART:
                     break
+            if args.show_vision:
+                show_vision(new_state)
 
             latest_apple_eaten += 1
             if game_state == GameState.RED or game_state == GameState.GREEN:
@@ -93,6 +107,8 @@ def main():
                     state_history.append(len(agent.q_table.keys()))
                 latest_apple_eaten = 0
                 break
+            if args.step and args.g:
+                graphic.wait_input()
 
     if args.f:
         agent.save(args.f)
@@ -134,7 +150,6 @@ def moving_average(value: list, k=100):
             average.append(current_sum / k)
         else:
             average.append(current_sum / (index + 1))
-
         index += 1
     return average
 
