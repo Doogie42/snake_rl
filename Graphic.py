@@ -40,28 +40,61 @@ class Graphic():
         self.green_apple_color = "green"
         self.action = Action.CONTINUE
         self.old_tick = -1
+        self.higscore = 0
+        self.higduration = 0
 
     def clean_up(self):
         pygame.quit()
 
     def render(self, snake: Snake,
-               state_value: list[float] = None,
+               game_number: int,
+               score: int,
+               duration: int,
+               q_table: dict,
                state: str = "") -> None:
-
+        self.higscore = max(score, self.higscore)
+        self.higduration = max(duration, self.higduration)
         self.get_input()
         self.clock.tick(self.tick)
         self.screen.fill("black")
         self.draw_border(snake)
         self.draw_snake(snake)
         self.draw_apple(snake)
-        self.display_fps()
-        if state_value:
-            self.display_state(state_value, state, snake)
+        self.top_statistics(game_number, score, duration,
+                            known_state=len(q_table.keys()))
+        if state:
+            self.display_state(q_table[state], state, snake)
+
         pygame.display.flip()
 
-    def display_fps(self):
+    def top_statistics(self, game_number: int, score: int,
+                       duration: int, known_state: int):
         text_surface = self.my_font.render(f'fps {self.tick}', False, "green")
         self.screen.blit(text_surface, (0, 0))
+        text_surface = self.my_font.render(f'# game {game_number}',
+                                           False,
+                                           "green")
+        self.screen.blit(text_surface, (0, 20))
+        text_surface = self.my_font.render(f'known state {known_state}',
+                                           False,
+                                           "green")
+        self.screen.blit(text_surface, (0, 40))
+
+        text_surface = self.my_font.render(f'score {score}', False, "green")
+        self.screen.blit(text_surface, (self.screen_width / 2, 0))
+        text_surface = self.my_font.render(f'highscore {self.higscore}',
+                                           False,
+                                           "green")
+        self.screen.blit(text_surface, (self.screen_width / 2, 20))
+
+        text_surface = self.my_font.render(f'duration {duration}',
+                                           False,
+                                           "green")
+        self.screen.blit(text_surface, (self.screen_width - 180, 0))
+        text_surface = self.my_font.render(f'highduration {self.higduration}',
+                                           False,
+                                           "green")
+        self.screen.blit(text_surface, (self.screen_width - 180, 20))
 
     def display_state(self,
                       state_value: list[float],

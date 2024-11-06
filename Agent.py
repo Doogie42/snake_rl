@@ -6,9 +6,10 @@ import math
 
 
 class Agent():
-    def __init__(self) -> None:
+    def __init__(self, prefill: bool = False) -> None:
         self.q_table = {}
-        self.q_table = prefill_q_table(self.q_table)
+        if prefill:
+            self.q_table = prefill_q_table(self.q_table)
         self.direction = None
         self.learning_rate = 0.001
         self.gamma = 0.5
