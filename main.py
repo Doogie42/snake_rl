@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import random
 import numpy as np
 import Config
+from argparse import RawTextHelpFormatter
 
 
 def show_vision(state: State):
@@ -17,31 +18,37 @@ def show_vision(state: State):
 
 def main():
     random.seed(12)
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.add_argument(
-        "-t", type=int, help="train", nargs="?",
+        "-t", type=int, help="number of training sessions", nargs="?",
         const=Config.DEFAULT_LEN, default=Config.DEFAULT_LEN)
     parser.add_argument(
-        "-g", help="graphic mode", action='store_true')
+        "-g", help="graphic mode\n" +
+        "AVAILABLE COMMAND:\n" +
+        "\tf: slow fps\n" +
+        "\tg: speed up fps\n" +
+        "\tspace: pause/continue",
+        action='store_true')
     parser.add_argument(
         "-f", help="file to save", type=str)
     parser.add_argument(
         "-l", help="file to load", type=str)
     parser.add_argument(
-        "-no-train", help="no-train", action="store_true")
+        "-no-train", help="don't train the model, useful for testing models",
+        action="store_true")
     parser.add_argument(
         "-size", type=int,
-        help="size of square", nargs="?",
+        help="size of snake square", nargs="?",
         const=Config.DEFAULT_SIZE, default=Config.DEFAULT_SIZE)
     parser.add_argument(
-        "-prefill", help="prefill q_table with custom value",
+        "-prefill", help="prefill q_table with proper value to avoid death",
         action="store_true")
     parser.add_argument(
         "-show-vision", help="show snake vision in terminal",
         action="store_true")
     parser.add_argument(
         "-step",
-        help="wait for user input before moving, need graphical enabled",
+        help="wait for user input before moving",
         action="store_true")
     args = parser.parse_args()
 
@@ -142,9 +149,10 @@ def main():
     plt.plot(state_history)
     plt.title("state discovery")
     plt.show()
-    print(f"max score = {max(score_history)}")
-
-    print(f"average score = {np.mean(score_history)}")
+    print(f"max score = {max(score_history)} ",
+          f"average score = {np.mean(score_history):.2f}")
+    print(f"max duration = {max(duration_history)} ",
+          f"average duration = {np.mean(duration_history):.2f}")
 
 
 def moving_average(value: list, k=100):
