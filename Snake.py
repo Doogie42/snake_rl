@@ -32,6 +32,7 @@ class Snake():
                  size_start=3,
                  nb_green_apple=2,
                  nb_red_apple=1) -> None:
+        assert nb_green_apple + nb_red_apple < board_height + board_width + size_start
         self.head = make_random_coord(0 + 3, board_width - 3)
         self.body = [self.head]
         self.direction = random.choice(list(SnakeDirection))
@@ -66,13 +67,10 @@ class Snake():
         self.direction = direction
         new_coord = self.head + self.direction_move[self.direction]
         if new_coord in self.body:
-            # print("Eaten alive")
             return GameState.DEAD
         if new_coord.x < 0 or new_coord.x >= self.board_width:
-            # print("WALL")
             return GameState.DEAD
         if new_coord.y < 0 or new_coord.y >= self.board_height:
-            # print("WALL")
             return GameState.DEAD
         self.body.insert(0, new_coord)
         self.head = new_coord
@@ -90,7 +88,10 @@ class Snake():
                 self.body.pop()
             if self.apple[apple_idx].type == AppleType.GREEN:
                 ret_state = GameState.GREEN
-            self.apple[apple_idx] = self.make_apple(self.apple[apple_idx].type)
+            if len(self.body) < self.board_height * self.board_width - len(self.apple) - 1:
+                self.apple[apple_idx] = self.make_apple(self.apple[apple_idx].type)
+            else:
+                del self.apple[apple_idx]
         except ValueError:
             self.body.pop()
             pass

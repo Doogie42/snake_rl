@@ -13,6 +13,7 @@ class Agent():
         self.direction = None
         self.learning_rate = 0.001
         self.gamma = 0.5
+        self.number_episode = 0
 
     def handle_new_state(self, state: State) -> None:
         try:
@@ -20,20 +21,18 @@ class Agent():
         except KeyError:
             self.q_table[state] = [0, 0, 0, 0]
 
-    def update_epsilon(self, current_iter) -> float:
-        coef = math.log(current_iter + 1, 10)
+    def update_epsilon(self) -> float:
+        coef = math.log(self.number_episode + 1, 10)
         if coef == 0:
             coef = 1
         epsilon = 0.2 / coef
-        if epsilon < 0.01:
-            epsilon = 0.01
+        epsilon = max(epsilon, 0.01)
         return epsilon
 
     def choose_direction(self,
                          state: State,
-                         allow_random: bool,
-                         current_iter: int) -> SnakeDirection:
-        epsilon = self.update_epsilon(current_iter)
+                         allow_random: bool) -> SnakeDirection:
+        epsilon = self.update_epsilon()
         self.handle_new_state(state)
         if allow_random and random.uniform(0, 1) < epsilon:
             arg = random.randrange(0, 4)
@@ -44,6 +43,7 @@ class Agent():
                 self.q_table[state] = [0, 0, 0, 0]
                 arg = random.randrange(0, 4)
         self.direction = SnakeDirection(arg).value
+        self.number_episode += 1
         return SnakeDirection(arg)
 
     def renforce(self, reward: int,
@@ -58,12 +58,20 @@ class Agent():
             self.q_table[state][self.direction] + self.learning_rate * delta
 
     def save(self, file_name: str) -> None:
-        with open(file_name, 'wb') as handle:
-            pickle.dump(self.q_table, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        try:
+            with open(file_name, 'wb') as handle:
+                pickle.dump(self.q_table, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as e:
+            print("Couldn't save mode got {e}")
+            exit(1)
 
     def load(self, file_name: str) -> None:
-        with open(file_name, 'rb') as handle:
-            self.q_table = pickle.load(handle)
+        try:
+            with open(file_name, 'rb') as handle:
+                self.q_table = pickle.load(handle)
+        except Exception as e:
+            print("Couldn't save mode got {e}")
+            exit(1)
 
 
 def permutation(s, i, d):

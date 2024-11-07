@@ -51,7 +51,8 @@ def main():
         help="wait for user input before moving",
         action="store_true")
     args = parser.parse_args()
-
+    if args.size:
+        assert args.size > 6, "map need to be at leat 7 square wide (big value will result in weird graphical game)"
     reward_val = {
         GameState.ALIVE: -1,
         GameState.DEAD: -50,
@@ -82,8 +83,7 @@ def main():
         while True:
             state = State(snake)
             direction = agent.choose_direction(state,
-                                               allow_random=not args.no_train,
-                                               current_iter=i)
+                                               allow_random=not args.no_train)
             game_state = snake.move(direction)
             new_state = State(snake)
             if not args.no_train:
