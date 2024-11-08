@@ -36,7 +36,7 @@ python main.py -t 10000 -f agent/model.mdl
 ```
 ```
 # Test the model:
-python main.py -no-train -l agent/model.mdl -g
+python main.py -no-train -l agent/20k.mdl -g
 ```
 You can also play the game yourself by running the following command and using wasd to move the snake:
 ```

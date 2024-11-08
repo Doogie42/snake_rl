@@ -43,7 +43,6 @@ class Agent():
                 self.q_table[state] = [0, 0, 0, 0]
                 arg = random.randrange(0, 4)
         self.direction = SnakeDirection(arg).value
-        self.number_episode += 1
         return SnakeDirection(arg)
 
     def renforce(self, reward: int,
@@ -60,9 +59,10 @@ class Agent():
     def save(self, file_name: str) -> None:
         try:
             with open(file_name, 'wb') as handle:
-                pickle.dump(self.q_table, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                pickle.dump(self.q_table, handle,
+                            protocol=pickle.HIGHEST_PROTOCOL)
         except Exception as e:
-            print("Couldn't save mode got {e}")
+            print(f"Couldn't save mode got {e}")
             exit(1)
 
     def load(self, file_name: str) -> None:
@@ -70,8 +70,11 @@ class Agent():
             with open(file_name, 'rb') as handle:
                 self.q_table = pickle.load(handle)
         except Exception as e:
-            print("Couldn't save mode got {e}")
+            print(f"Couldn't save mode got {e}")
             exit(1)
+
+    def add_episode_number(self) -> None:
+        self.number_episode += 1
 
 
 def permutation(s, i, d):

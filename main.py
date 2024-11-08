@@ -1,7 +1,6 @@
 import argparse
 from Snake import Snake, GameState
 from Graphic import Graphic, Action
-from State import State
 from Agent import Agent
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -9,6 +8,7 @@ import random
 import numpy as np
 import Config
 from argparse import RawTextHelpFormatter
+from State import State
 
 
 def show_vision(state: State):
@@ -17,11 +17,12 @@ def show_vision(state: State):
 
 
 def main():
-    random.seed(12)
+    random.seed()
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.add_argument(
         "-t", type=int, help="number of training sessions", nargs="?",
-        const=Config.DEFAULT_LEN, default=Config.DEFAULT_LEN)
+        const=Config.DEFAULT_TRAINING_SESS,
+        default=Config.DEFAULT_TRAINING_SESS)
     parser.add_argument(
         "-g", help="graphic mode\n" +
         "AVAILABLE COMMAND:\n" +
@@ -52,7 +53,8 @@ def main():
         action="store_true")
     args = parser.parse_args()
     if args.size:
-        assert args.size > 6, "map need to be at leat 7 square wide (big value will result in weird graphical game)"
+        assert args.size > 6, "map need to be at leat 7 square wide (big value\
+            will result in weird graphical game)"
     reward_val = {
         GameState.ALIVE: -1,
         GameState.DEAD: -50,
@@ -118,6 +120,7 @@ def main():
                 if not args.prefill:
                     state_history.append(len(agent.q_table.keys()))
                 latest_apple_eaten = 0
+                agent.add_episode_number()
                 break
             if args.step:
                 if args.g:

@@ -61,7 +61,7 @@ class Graphic():
                             known_state=len(q_table.keys()))
         if state:
             self.display_state(q_table[state], state, snake)
-
+        self.display_help(snake)
         pygame.display.flip()
 
     def top_statistics(self, game_number: int, score: int,
@@ -104,9 +104,33 @@ class Graphic():
                                            Config.FONT_COLOR)
         self.screen.blit(text_surface, (0, offset_bottom_y + 10))
         text_surface = self.my_font.render(
-            f'value {[int(i) for i in state_value]}', False, Config.FONT_COLOR
+            f'value {[round(i, 2) for i in state_value]}',
+            False, Config.FONT_COLOR
         )
         self.screen.blit(text_surface, (0, offset_bottom_y + 30))
+
+    def display_help(self, snake: Snake):
+        offset_bottom_y = OFFSET_TOP_Y + snake.board_height * SQUARE_SIZE
+        text_surface = self.my_font.render('f to slow down', False,
+                                           Config.FONT_COLOR)
+        self.screen.blit(text_surface, (self.screen_width - 300,
+                                        offset_bottom_y + 20))
+        text_surface = self.my_font.render('g to speed up', False,
+                                           Config.FONT_COLOR)
+        self.screen.blit(text_surface, (self.screen_width - 300,
+                                        offset_bottom_y + 40))
+        text_surface = self.my_font.render('r to restart', False,
+                                           Config.FONT_COLOR)
+        self.screen.blit(text_surface, (self.screen_width - 300,
+                                        offset_bottom_y + 60))
+        text_surface = self.my_font.render('space to stop/start', False,
+                                           Config.FONT_COLOR)
+        self.screen.blit(text_surface, (self.screen_width - 300,
+                                        offset_bottom_y + 80))
+        text_surface = self.my_font.render('any other key in step mode', False,
+                                           Config.FONT_COLOR)
+        self.screen.blit(text_surface, (self.screen_width - 300,
+                                        offset_bottom_y + 100))
 
     def board_to_screen_coord(self, coord: Coord) -> Coord:
         offset_x = OFFSET_TOP_X
