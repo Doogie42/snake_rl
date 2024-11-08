@@ -7,11 +7,12 @@ def main():
     random.seed()
     graphic = Graphic(tick=10)
     snake = Snake(board_height=20, board_width=20)
+    game_number = 0
+    duration = 0
     while True:
         direction = snake.direction
         game_state = snake.move(direction)
 
-        graphic.render(snake)
         action = graphic.get_user_action()
         if action == Action.QUIT:
             break
@@ -26,9 +27,11 @@ def main():
         if action == Action.RIGHT:
             snake.direction = SnakeDirection(3)
 
+        graphic.render(snake, game_number, snake.get_score(), duration, {}, 0)
         if game_state == GameState.DEAD:
             snake = Snake(board_height=20, board_width=20)
-
+            duration = 0
+            game_number += 1
             continue
     graphic.clean_up()
 
